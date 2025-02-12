@@ -1,0 +1,31 @@
+[redis]
+host = "localhost"
+port = 6379
+db = 0
+user = "usr"
+password = "pwd"
+redis_password = "super_password"
+
+[postgres]
+host = "localhost"
+port = 5432
+user = "usr"
+password = "pwd"
+db_name = "db"
+ssl_mode = "disable"
+migrations_path = "app/migrations"
+
+[minio]
+host = "localhost"
+port = 9000
+root_user = "minio"
+root_password = "password"
+articles_bucket = "articles"
+attachments_bucket = "attachments"
+avatars_bucket = "avatars"
+use_ssl = false
+url_lifetime = "24h"
+
+[docker]
+image_name = "alpine"
+timeout = 5
