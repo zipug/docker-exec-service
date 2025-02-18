@@ -12,4 +12,5 @@ type Container struct {
 	Description   string
 	Icon          string
 	State         string
+	ApiToken      string
 }

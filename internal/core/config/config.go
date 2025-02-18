@@ -29,8 +29,8 @@ type Postgres struct {
 }
 
 type MiniO struct {
-	Host              string        `toml:"host" env:"MINIO_HOST"`
-	Port              int           `toml:"port" env:"MINIO_PORT"`
+	Host              string        `toml:"host" env:"MINIO_HOST" env-default:"localhost"`
+	Port              int           `toml:"port" env:"MINIO_PORT" env-default:"9000"`
 	User              string        `toml:"user" env:"MINIO_ROOT_USER"`
 	Password          string        `toml:"password" env:"MINIO_ROOT_PASSWORD"`
 	BucketArticles    string        `toml:"articles_bucket" env:"MINIO_ARTICLES_BUCKET"`
@@ -40,17 +40,22 @@ type MiniO struct {
 	UseSsl            bool          `toml:"use_ssl" env:"MINIO_USE_SSL"`
 }
 
+type Button struct {
+	Text string `mapstructure:"text"`
+	Data string `mapstructure:"data"`
+}
+
 type Docker struct {
 	ImageName string `toml:"image_name" env:"TELEGRAM_IMAGE_NAME"`
 	Timeout   int    `toml:"timeout" env:"TELEGRAM_TIMEOUT" env-default:"10"`
 }
 
 type ExecutorConfig struct {
-	ServerURL  string   `toml:"server" env:"SERVER_URL"`
 	Redis      Redis    `toml:"redis"`
 	Postgres   Postgres `toml:"postgres"`
 	MiniO      MiniO    `toml:"minio"`
 	Docker     Docker   `toml:"docker"`
+	SearchUrl  string   `toml:"search_url" env:"SEARCH_URL" env-required:"true"`
 	configPath string
 }
 

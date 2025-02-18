@@ -39,8 +39,9 @@ func NewDockerService(ctx context.Context, repo ports.ContainersRepository, cfg 
 	}
 }
 
-func (d *DockerService) PullImage(ctx context.Context) error {
-	reader, err := d.client.ImagePull(d.ctx, "docker.io/library/alpine", image.PullOptions{})
+func (d *DockerService) PullImage(ctx context.Context, img string) error {
+	reader, err := d.client.ImagePull(d.ctx, img, image.PullOptions{})
+	d.client.ImageImport(d.ctx, image.ImportSource{SourceName: img}, img, image.ImportOptions{})
 	if err != nil {
 		return err
 	}
@@ -48,7 +49,7 @@ func (d *DockerService) PullImage(ctx context.Context) error {
 	return nil
 }
 
-func (d *DockerService) CreateContainerConfig(ctx context.Context) (*container.Config, error) {
+func (d *DockerService) CreateContainerConfig(ctx context.Context, bot models.Container) (*container.Config, error) {
 	return &container.Config{
 		Image: d.cfg.Docker.ImageName,
 		Tty:   true,
@@ -69,6 +70,14 @@ func (d *DockerService) CreateContainerConfig(ctx context.Context) (*container.C
 			fmt.Sprintf("MINIO_AVATARS_BUCKET=%s", d.cfg.MiniO.BucketAvatars),
 			fmt.Sprintf("MINIO_USE_SSL=%t", d.cfg.MiniO.UseSsl),
 			fmt.Sprintf("MINIO_URL_LIFETIME=%s", d.cfg.MiniO.UrlLifetime),
+			fmt.Sprintf("TELEGRAM_BOT_TOKEN=%s", bot.ApiToken),
+			fmt.Sprintf("SEARCH_URL=%s", d.cfg.SearchUrl),
+			fmt.Sprintf("CONTAINER_BOT_ID=%d", bot.BotID),
+			fmt.Sprintf("CONTAINER_PROJECT_ID=%d", bot.ProjectID),
+			fmt.Sprintf("CONTAINER_USER_ID=%d", bot.UserID),
+			fmt.Sprintf("CONTAINER_NAME=%s", bot.Name),
+			fmt.Sprintf("CONTAINER_DESCRIPTION=%s", bot.Description),
+			fmt.Sprintf("CONTAINER_ICON=%s", bot.Icon),
 		},
 		Labels: map[string]string{
 			"co.elastic.logs/enabled":             "true",
@@ -93,12 +102,16 @@ func (d *DockerService) CreateContainer(ctx context.Context, bot models.Containe
 		return nil, 0, err
 	}
 	portBinding := nat.PortMap{containerPort: []nat.PortBinding{hostBinding}}
-	cfg, err := d.CreateContainerConfig(ctx)
+	cfg, err := d.CreateContainerConfig(ctx, bot)
 	if err != nil {
 		return nil, 0, err
 	}
 	resp, err := d.client.ContainerCreate(d.ctx, cfg, &container.HostConfig{
 		PortBindings: portBinding,
+		RestartPolicy: container.RestartPolicy{
+			Name: "unless-stopped",
+		},
+		NetworkMode: "host",
 	}, nil, nil, bot.ContainerName)
 	if err != nil {
 		return nil, 0, err
@@ -175,9 +188,9 @@ func (d *DockerService) DockerFactory(message models.BotMessage) error {
 	switch message.Type {
 	case "run":
 		fmt.Println("Running container...")
-		if err := d.PullImage(d.ctx); err != nil {
+		/*if err := d.PullImage(d.ctx, d.cfg.Docker.ImageName); err != nil {
 			return err
-		}
+		}*/
 		model := models.Container{
 			ContainerName: d.PrepareContainerName(fmt.Sprintf("%s%s", message.Payload.Name, time.Now())),
 			BotID:         message.Payload.BotID,
@@ -186,8 +199,10 @@ func (d *DockerService) DockerFactory(message models.BotMessage) error {
 			Name:          message.Payload.Name,
 			Description:   message.Payload.Description,
 			Icon:          message.Payload.Icon,
+			ApiToken:      message.Payload.ApiToken,
 			State:         "created",
 		}
+		fmt.Println(model)
 		bot, err := d.GetContainerByBotInfo(d.ctx, model)
 		if err != nil {
 			resp, db_id, err := d.CreateContainer(d.ctx, model)

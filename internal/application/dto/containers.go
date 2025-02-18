@@ -17,6 +17,7 @@ type ContainerDbo struct {
 	Description   string       `db:"description"`
 	Icon          string       `db:"icon"`
 	State         string       `db:"state"`
+	ApiToken      string       `db:"api_token"`
 	CreatedAt     sql.NullTime `db:"created_at"`
 	UpdatedAt     sql.NullTime `db:"updated_at"`
 	DeletedAt     sql.NullTime `db:"deleted_at"`
@@ -35,6 +36,7 @@ func (d *ContainerDbo) ToValue() models.Container {
 		Description:   d.Description,
 		Icon:          d.Icon,
 		State:         d.State,
+		ApiToken:      d.ApiToken,
 	}
 }
 
@@ -51,5 +53,6 @@ func ToContainerDbo(m models.Container) ContainerDbo {
 		Description:   m.Description,
 		Icon:          m.Icon,
 		State:         m.State,
+		ApiToken:      m.ApiToken,
 	}
 }
