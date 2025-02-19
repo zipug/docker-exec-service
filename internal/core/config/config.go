@@ -50,13 +50,20 @@ type Docker struct {
 	Timeout   int    `toml:"timeout" env:"TELEGRAM_TIMEOUT" env-default:"10"`
 }
 
+type OpenRouterAi struct {
+	Token string `toml:"token" env:"OPEN_ROUTER_API_TOKEN"`
+	Model string `toml:"model" env:"OPEN_ROUTER_API_MODEL"`
+	URL   string `toml:"url" env:"OPEN_ROUTER_API_URL"`
+}
+
 type ExecutorConfig struct {
-	Redis      Redis    `toml:"redis"`
-	Postgres   Postgres `toml:"postgres"`
-	MiniO      MiniO    `toml:"minio"`
-	Docker     Docker   `toml:"docker"`
-	SearchUrl  string   `toml:"search_url" env:"SEARCH_URL" env-required:"true"`
-	configPath string
+	Redis        Redis        `toml:"redis"`
+	Postgres     Postgres     `toml:"postgres"`
+	MiniO        MiniO        `toml:"minio"`
+	Docker       Docker       `toml:"docker"`
+	SearchUrl    string       `toml:"search_url" env:"SEARCH_URL" env-required:"true"`
+	OpenRouterAi OpenRouterAi `toml:"open_router_ai"`
+	configPath   string
 }
 
 func NewConfigService() *ExecutorConfig {

@@ -78,6 +78,9 @@ func (d *DockerService) CreateContainerConfig(ctx context.Context, bot models.Co
 			fmt.Sprintf("CONTAINER_NAME=%s", bot.Name),
 			fmt.Sprintf("CONTAINER_DESCRIPTION=%s", bot.Description),
 			fmt.Sprintf("CONTAINER_ICON=%s", bot.Icon),
+			fmt.Sprintf("OPEN_ROUTER_API_TOKEN=%s", d.cfg.OpenRouterAi.Token),
+			fmt.Sprintf("OPEN_ROUTER_API_MODEL=%s", d.cfg.OpenRouterAi.Model),
+			fmt.Sprintf("OPEN_ROUTER_API_URL=%s", d.cfg.OpenRouterAi.URL),
 		},
 		Labels: map[string]string{
 			"co.elastic.logs/enabled":             "true",
