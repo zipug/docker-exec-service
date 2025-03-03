@@ -56,6 +56,14 @@ type OpenRouterAi struct {
 	URL   string `toml:"url" env:"OPEN_ROUTER_API_URL"`
 }
 
+type GigaChatAi struct {
+	GRPCAddress      string `toml:"grpc_address" env:"GIGACHAT_GRPC_ADDRESS"`
+	AuthURL          string `toml:"auth_url" env:"GIGACHAT_AUTH_URL"`
+	AuthorizationKey string `toml:"authorization_key" env:"GIGACHAT_AUTHORIZATION_KEY"`
+	Scope            string `toml:"scope" env:"GIGACHAT_SCOPE"`
+	Model            string `toml:"model" env:"GIGACHAT_MODEL"`
+}
+
 type ExecutorConfig struct {
 	Redis        Redis        `toml:"redis"`
 	Postgres     Postgres     `toml:"postgres"`
@@ -63,6 +71,7 @@ type ExecutorConfig struct {
 	Docker       Docker       `toml:"docker"`
 	SearchUrl    string       `toml:"search_url" env:"SEARCH_URL" env-required:"true"`
 	OpenRouterAi OpenRouterAi `toml:"open_router_ai"`
+	GigaChatAi   GigaChatAi   `toml:"gigachat"`
 	configPath   string
 }
 

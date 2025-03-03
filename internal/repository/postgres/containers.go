@@ -192,8 +192,7 @@ func (repo *PostgresRepository) DeleteBotById(ctx context.Context, id int64) err
 		repo.db,
 		`
 		DELETE FROM bot_containers
-		WHERE id = $1::bigint
-		  AND state <> 'running';
+		WHERE id = $1::bigint;
 		`,
 		id,
 	)
